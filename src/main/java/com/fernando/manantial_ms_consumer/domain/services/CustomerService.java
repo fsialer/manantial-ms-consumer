@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,10 @@ public class CustomerService implements SaveCustomerUseCase {
                     .age(customer.getAge())
                     .birthDate(customer.getBirthDate())
                     .build();
-            customerPersistencePort.saveCustomer(customerStream).subscribe();
+            customerPersistencePort.saveCustomer(customerStream)
+                    .doOnSuccess(saved -> log.info("Cliente guardado en Redis: {}", saved))
+                    .doOnError(e -> log.error("Error guardando en Redis", e))
+                    .subscribe();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

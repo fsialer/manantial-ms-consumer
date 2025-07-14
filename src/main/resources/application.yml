@@ -9,6 +9,7 @@ spring:
     consumer:
       auto-offset-reset: latest
   data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+    mongodb:
+      uri: ${DB_HOST:mongodb://localhost:27017/customer_consumer_db?authSource=admin}
+      username: ${DB_USERNAME:root}
+      password: ${DB_PASSWORD:1234}
