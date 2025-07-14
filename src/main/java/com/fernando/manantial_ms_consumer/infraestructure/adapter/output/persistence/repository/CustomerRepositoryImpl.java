@@ -1,6 +1,5 @@
 package com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.models.CustomerDocument;
 import lombok.RequiredArgsConstructor;
