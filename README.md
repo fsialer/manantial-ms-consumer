@@ -3,7 +3,8 @@
 
 ## Tech
 1. WebFlux
-2. Redis
+2. Mongodb
 3. Lombok
 4. Kafka
-5. 
+5. Docker
+6. Github action
