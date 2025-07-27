@@ -3,7 +3,7 @@ package com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persis
 import com.fernando.manantial_ms_consumer.application.ports.output.CustomerPersistencePort;
 import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.mappers.CustomerPersistenceMapper;
-import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.repository.CustomerRepository;
+import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.repository.CustomerRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -12,11 +12,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CustomerPersistenceAdapter implements CustomerPersistencePort {
 
-    private final CustomerRepository customerRepository;
+    private final CustomerRedisRepository customerRepository;
     private final CustomerPersistenceMapper customerPersistenceMapper;
+
     @Override
-    public Mono<Customer> saveCustomer(Customer customer) {
-        return customerPersistenceMapper
-                .customerDocumentMonoToCustomerMono(customerRepository.save(customerPersistenceMapper.customerToCustomerDocument(customer)));
+    public Mono<Boolean> saveCustomer(Customer customer) {
+        return customerRepository.save(customerPersistenceMapper.customerToCustomerTemplate(customer));
     }
 }

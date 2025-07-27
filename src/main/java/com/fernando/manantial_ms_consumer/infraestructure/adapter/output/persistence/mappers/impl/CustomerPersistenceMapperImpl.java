@@ -3,6 +3,7 @@ package com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persis
 import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.mappers.CustomerPersistenceMapper;
 import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.models.CustomerDocument;
+import com.fernando.manantial_ms_consumer.infraestructure.adapter.output.persistence.models.CustomerTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -30,5 +31,28 @@ public class CustomerPersistenceMapperImpl implements CustomerPersistenceMapper 
                 .age(customer.getAge())
                 .birthDate(customer.getBirthDate())
                 .build();
+    }
+
+    @Override
+    public CustomerTemplate customerToCustomerTemplate(Customer customer) {
+        return CustomerTemplate.builder()
+                .id(customer.getId())
+                .name(customer.getName())
+                .lastName(customer.getLastName())
+                .age(customer.getAge())
+                .birthDate(customer.getBirthDate())
+                .build();
+    }
+
+    @Override
+    public Mono<Customer> customerTemplateMonoToCustomerMono(Mono<CustomerTemplate> customerTemplateMono) {
+        return customerTemplateMono.flatMap(customer->
+                Mono.just(Customer.builder()
+                        .id(customer.getId())
+                        .name(customer.getName())
+                        .age(customer.getAge())
+                        .birthDate(customer.getBirthDate())
+                        .build())
+        );
     }
 }
