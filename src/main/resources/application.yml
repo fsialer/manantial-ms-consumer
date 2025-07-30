@@ -12,3 +12,6 @@ spring:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
     password: ${REDIS_PASSWORD:password}
+storage:
+  type: ${STORAGE_TYPE:local} # Options: local, s3, blob
+  path: ${STORAGE_PATH:/pdfs}

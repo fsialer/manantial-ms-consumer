@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.fernando.manantial-ms-consumer'
@@ -25,6 +26,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation("com.github.librepdf:openpdf:2.2.4")
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.kafka:spring-kafka'
@@ -38,4 +40,31 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required = true  // Necesario para SonarQube
+		html.required = true
+		csv.required = false
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect { fileTree(dir: it, exclude: [
+				'**/config/**',
+				'**/*Config.class',
+				'**/*Configuration.class',
+				"**/*MapperImpl.class",
+				'**/ManantialMsConsumerApplication.*',
+				'**/*RepositoryImpl*.*',
+				'**/*OpenPdf*.*',
+				'**/AzureBlobStoreStorageDrive.*',
+				'**/AwsS3StorageDrive.*',
+				"**/LocalStorageDrive.*"
+		]) }))
+	}
+}
+
+tasks.test {
+	finalizedBy tasks.jacocoTestReport  // Asegura que el reporte se genere después de las pruebas
 }
