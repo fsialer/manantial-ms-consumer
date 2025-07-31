@@ -5,9 +5,9 @@ spring:
   application:
     name: manantial-ms-consumer
   kafka:
-    bootstrap-servers: ${KAFKA_HOST:localhost:9092 }
     consumer:
-      auto-offset-reset: latest
+      bootstrap-servers: ${KAFKA_HOST:localhost:9092 }
+      #auto-offset-reset: latest
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}

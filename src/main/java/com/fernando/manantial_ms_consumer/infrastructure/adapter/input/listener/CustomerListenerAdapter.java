@@ -18,16 +18,15 @@ public class CustomerListenerAdapter {
     private final CustomerListenerMapper customerListenerMapper;
     private final GeneratePdfCustomerUseCase generatePdfCustomerUseCase;
 
-    @KafkaListener(topics = "customer-topic", groupId = "customer-service-a")
+    @KafkaListener(topics = "customer-topic", groupId = "customer-service-a", containerFactory = "strContainerFactory")
     public void receiveMessageCustomer(ConsumerRecord<String, String> record){
         Mono.just(record.value())
                 .flatMap(json -> saveCustomerUseCase.save(customerListenerMapper.customerRequestToCustomer(customerListenerMapper.stringToCustomer(json))))
                     .subscribe();
     }
 
-    @KafkaListener(topics = "customer-topic", groupId = "customer-service-b")
+    @KafkaListener(topics = "customer-topic", groupId = "customer-service-b", containerFactory = "strContainerFactory")
     public void receiveMessageCustomerPdf(ConsumerRecord<String, String> record){
-        log.info("Received messagge for pdf geneations");
         Mono.just(record.value())
                 .flatMap(json -> {
                     generatePdfCustomerUseCase.generatePdfCustomer(customerListenerMapper.customerRequestToCustomer(customerListenerMapper.stringToCustomer(json)));
