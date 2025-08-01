@@ -5,13 +5,15 @@ spring:
   application:
     name: manantial-ms-consumer
   kafka:
-    consumer:
-      bootstrap-servers: ${KAFKA_HOST:localhost:9092 }
-      #auto-offset-reset: latest
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD:password}
+    bootstrap-servers: ${KAFKA_HOST:localhost:9092}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:password}
 storage:
   type: ${STORAGE_TYPE:local} # Options: local, s3, blob
   path: ${STORAGE_PATH:/pdfs}
+logging:
+  file:
+    name: ./logs/app.log
