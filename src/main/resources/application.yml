@@ -14,6 +14,21 @@ spring:
 storage:
   type: ${STORAGE_TYPE:local} # Options: local, s3, blob
   path: ${STORAGE_PATH:/pdfs}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, info, prometheus
+    endpoint:
+      prometheus:
+        enabled: true
+    metrics:
+      enable:
+        jvm: true
+        logback: true
+      export:
+        prometheus:
+          enabled: true
 logging:
   file:
     name: ./logs/app.log
