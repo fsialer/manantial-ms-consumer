@@ -14,7 +14,7 @@ public class LocalStorageDrive implements StorageDrive{
 
 
     @Override
-    public void uploadFile(String fileName, byte[] content, String path) {
+    public void uploadFile(String fileName, byte[] content, String path, String contentType) {
         try{
             // Crear el directorio si no existe
             log.info("path: {}", path);

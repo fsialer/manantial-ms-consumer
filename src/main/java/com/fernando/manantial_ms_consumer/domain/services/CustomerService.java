@@ -8,6 +8,7 @@ import com.fernando.manantial_ms_consumer.application.ports.output.StoreFilePort
 import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +16,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerService implements SaveCustomerUseCase, GeneratePdfCustomerUseCase {
+
+    @Value("${file_path.customer.information}")
+    private String customerInformationPath;
     private final CustomerPersistencePort customerPersistencePort;
     private final GenerateFilePdfPort generateFilePdfPort;
     private final StoreFilePort storeFilePort;
@@ -30,7 +34,7 @@ public class CustomerService implements SaveCustomerUseCase, GeneratePdfCustomer
     @Override
     public void generatePdfCustomer(Customer customer) {
         byte[] pdf= generateFilePdfPort.generatePdfCustomer(customer);
-        storeFilePort.store("customer_"+customer.getId()+".pdf",pdf);
+        storeFilePort.store("customer_"+customer.getId()+".pdf",pdf, customerInformationPath,"application/pdf");
         log.info("PDF generated and stored for customer: {} ({})",customer.getId(),"customer_"+customer.getId()+".pdf");
     }
 }

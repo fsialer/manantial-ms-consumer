@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -73,10 +74,11 @@ class CustomerServiceTest {
     @DisplayName("When Generating Pdf For Customer Expect Pdf Generated And Stored")
     void When_GeneratingPdfForCustomer_Expect_PdfGeneratedAndStored(){
         when(generateFilePdfPort.generatePdfCustomer(any(Customer.class))).thenReturn(new byte[0]);
-        doNothing().when(storeFilePort).store(anyString(),any());
+        doNothing().when(storeFilePort).store(anyString(),any(),anyString(),anyString());
         Customer customer  = TestUtilCustomer.buildCustomerMock();
+        ReflectionTestUtils.setField(customerService, "customerInformationPath", "/pds");
         customerService.generatePdfCustomer(customer);
         Mockito.verify(generateFilePdfPort,times(1)).generatePdfCustomer(any(Customer.class));
-        Mockito.verify(storeFilePort,times(1)).store(anyString(),any());
+        Mockito.verify(storeFilePort,times(1)).store(anyString(),any(),anyString(),anyString());
     }
 }

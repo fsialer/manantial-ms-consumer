@@ -12,12 +12,10 @@ public class StorageFileAdapter implements StoreFilePort {
 
     @Value("${storage.type}")
     private String storageType;
-
-    @Value("${storage.path}")
-    private String path;
+    private final StorageFactory storageFactory;
 
     @Override
-    public void store(String fileName, byte[] content) {
-        StorageFactory.getStorageDrive(storageType).uploadFile(fileName,content, path);
+    public void store(String fileName, byte[] content, String path, String contentType) {
+        storageFactory.getStorageDrive(storageType).uploadFile(fileName,content, path, contentType);
     }
 }

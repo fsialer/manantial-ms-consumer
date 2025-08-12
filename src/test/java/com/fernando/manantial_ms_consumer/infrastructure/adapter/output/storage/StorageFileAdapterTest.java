@@ -1,7 +1,6 @@
 package com.fernando.manantial_ms_consumer.infrastructure.adapter.output.storage;
 
-import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.storage.facade.StorageDrive;
-import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.storage.facade.StorageFactory;
+import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.storage.facade.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +14,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StorageFileAdapterTest {
@@ -28,8 +27,11 @@ class StorageFileAdapterTest {
     @Mock
     private StorageDrive mockDrive;
 
+    @Mock
+    private StorageFactory storageFactory;
+
+
     @ParameterizedTest
-    //@ValueSource(strings = {"s3", "local", "elk"},strings={"/pdfs"})
     @CsvSource({
             "local, /pdfs",
             "s3, ignored",
@@ -39,16 +41,13 @@ class StorageFileAdapterTest {
     void When_StoringAFile_ExpectUploadFileToBeCalledWithCorrectParameters(String storageType, String path) {
         String fileName = storageType+"test.pdf";
         byte[] content = "Hello World".getBytes();
+        when(storageFactory.getStorageDrive(storageType)).thenReturn(mockDrive);
+        String contenType = "application/pdf";
 
         ReflectionTestUtils.setField(storageFileAdapter, "storageType", storageType);
-        ReflectionTestUtils.setField(storageFileAdapter, "path", path);
-
-        try (MockedStatic<StorageFactory> mockedFactory = Mockito.mockStatic(StorageFactory.class)) {
-            mockedFactory.when(() -> StorageFactory.getStorageDrive(storageType))
-                    .thenReturn(mockDrive);
-            storageFileAdapter.store(fileName, content);
-            verify(mockDrive,times(1)).uploadFile(anyString(), any(),anyString());
-        }
+        doNothing().when(mockDrive).uploadFile(anyString(),any(),anyString(),anyString());
+        storageFileAdapter.store(fileName, content,path,contenType);
+        verify(mockDrive,times(1)).uploadFile(anyString(), any(),anyString(),anyString());
     }
 
     @Test
@@ -56,15 +55,10 @@ class StorageFileAdapterTest {
     void Expect_IllegalArgumentExceptionForStorageTypeUnsupported_When_StoringAFile(){
         String unsupportedStorageType = "unsupported";
         String path = "/pdfs";
+        String contentType = "application/pdf";
         ReflectionTestUtils.setField(storageFileAdapter, "storageType", unsupportedStorageType);
-        ReflectionTestUtils.setField(storageFileAdapter, "path", path);
-        try(MockedStatic<StorageFactory> mockedFactory = Mockito.mockStatic(StorageFactory.class)){
-            mockedFactory.when(()-> StorageFactory.getStorageDrive(unsupportedStorageType))
-                    .thenThrow(new IllegalArgumentException("Unsupported storage type: "+unsupportedStorageType));
-                    storageFileAdapter.store("file.pdf","content".getBytes());
-            verify(mockDrive,times(0)).uploadFile(anyString(), any(),anyString());
-        }catch(IllegalArgumentException e){
-            assert(e.getMessage().equals("Unsupported storage type: "+unsupportedStorageType));
-        }
+        when(storageFactory.getStorageDrive(unsupportedStorageType)).thenThrow(new IllegalArgumentException("Unsupported storage type: ".concat(unsupportedStorageType)));
+        assertThrows(IllegalArgumentException.class,()->storageFileAdapter.store("file.pdf","content".getBytes(),path,contentType));
+        verify(mockDrive,times(0)).uploadFile(anyString(), any(),anyString(),anyString());
     }
 }

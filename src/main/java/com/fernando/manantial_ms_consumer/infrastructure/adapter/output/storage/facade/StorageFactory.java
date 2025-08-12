@@ -6,13 +6,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class StorageFactory {
+    private final AwsS3StorageDrive awsS3StorageDrive;
+    private final LocalStorageDrive localStorageDrive;
+    private final AzureBlobStoreStorageDrive azureBlobStoreStorageDrive;
 
-    public static StorageDrive getStorageDrive(String type){
+    public StorageDrive getStorageDrive(String type){
 
         return switch( type.toLowerCase()){
-            case "local"-> new LocalStorageDrive();
-            case "s3"-> new AwsS3StorageDrive();
-            case "blob"-> new AzureBlobStoreStorageDrive();
+            case "local"->localStorageDrive;
+            case "s3"-> awsS3StorageDrive;
+            case "blob"-> azureBlobStoreStorageDrive;
             default -> throw new IllegalArgumentException("Unsupported storage type: "+type);
         };
     }
