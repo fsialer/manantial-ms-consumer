@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerPersistencePort {
     Mono<Boolean> saveCustomer(Customer customer);
+    Mono<Customer> getCustomer(String key);
+    Mono<Boolean> deleteCustomer(String key);
 }

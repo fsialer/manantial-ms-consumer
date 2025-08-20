@@ -15,6 +15,24 @@ public class CustomerRedisRepositoryImpl implements CustomerRedisRepository {
     private final ReactiveValueOperations<String, CustomerTemplate> reactiveRedisTemplate;
     @Override
     public Mono<Boolean> save(CustomerTemplate customerTemplate) {
-        return reactiveRedisTemplate.set(customerTemplate.getId(), customerTemplate);
+        return reactiveRedisTemplate.set("customers:"+customerTemplate.getId(), customerTemplate);
     }
+
+    @Override
+    public Mono<Boolean> delete(String key) {
+        return reactiveRedisTemplate.delete("customers:"+key);
+    }
+
+    @Override
+    public Mono<CustomerTemplate> getCustomer(String key) {
+        log.info("key: {}",key);
+        return reactiveRedisTemplate.get("customer"+key)
+                .doOnNext(c -> log.info("📦 Cliente obtenido desde Redis con key {}: {} {}", key, c, c.getId()))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("⚠️ Cliente no encontrado en Redis con key: {}", key);
+                    return Mono.empty();
+                })).log();
+    }
+
+
 }

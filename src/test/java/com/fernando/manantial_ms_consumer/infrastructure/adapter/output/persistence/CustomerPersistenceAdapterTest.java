@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -59,4 +60,47 @@ class CustomerPersistenceAdapterTest {
         Mockito.verify(customerRepository,times(1)).save(any(CustomerTemplate.class));
         Mockito.verify(customerPersistenceMapper,times(1)).customerToCustomerTemplate(any(Customer.class));
     }
+
+    @Test
+    @DisplayName("When Delete Customer Expect Deleted Successfully")
+    void When_DeleteCustomer_ExpectDeletedSuccessfully(){
+        when(customerRepository.delete(anyString())).thenReturn(Mono.just(Boolean.TRUE));
+        Mono<Boolean> result = customerPersistenceAdapter.deleteCustomer("14sds");
+        StepVerifier.create(result)
+                .expectNext(Boolean.TRUE)
+                .verifyComplete();
+        Mockito.verify(customerRepository,times(1)).delete(anyString());
+    }
+
+    @Test
+    @DisplayName("When Delete Customer Failed Expect Do Not Deleted")
+    void When_SavingCustomer_ExpectDoNotDeleted(){
+        when(customerRepository.delete(anyString())).thenReturn(Mono.just(Boolean.FALSE));
+        Mono<Boolean> result = customerPersistenceAdapter.deleteCustomer("14sds");
+        StepVerifier.create(result)
+                .expectNext(Boolean.FALSE)
+                .verifyComplete();
+        Mockito.verify(customerRepository,times(1)).delete(anyString());
+    }
+
+    @Test
+    @DisplayName("When Customer Id Exists Expect Customer Information")
+    void When_CustomerIdExists_Expect_CustomerInformation(){
+        CustomerTemplate customerTemplate= TestUtilCustomer.buildCustomerTemplateMock();
+        when(customerRepository.getCustomer(anyString())).thenReturn(Mono.just(customerTemplate));
+        when(customerPersistenceMapper.customerTemplateTocustomer(any(CustomerTemplate.class))).thenReturn(TestUtilCustomer.buildCustomerMock());
+        Mono<Customer> result = customerPersistenceAdapter.getCustomer("12345");
+        StepVerifier.create(result)
+                .expectNextMatches(customerMatch->{
+                        System.out.println("customerTemplate "+customerMatch.getName());
+                        return customerMatch.getId().equals(customerTemplate.getId())
+                                && customerMatch.getName().equals(customerTemplate.getName())
+                                && customerMatch.getLastName().equals(customerTemplate.getLastName())
+                                && customerMatch.getAge().equals(customerTemplate.getAge())
+                                && customerMatch.getBirthDate().equals(customerTemplate.getBirthDate());}
+                ).verifyComplete();
+        Mockito.verify(customerRepository,times(1)).getCustomer(anyString());
+        Mockito.verify(customerPersistenceMapper,times(1)).customerTemplateTocustomer(any());
+    }
+
 }

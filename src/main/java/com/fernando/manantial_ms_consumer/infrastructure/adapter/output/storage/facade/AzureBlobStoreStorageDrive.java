@@ -8,4 +8,9 @@ public class AzureBlobStoreStorageDrive implements StorageDrive{
     public void uploadFile(String fileName, byte[] content,String path, String contentType) {
 
     }
+
+    @Override
+    public void deleteFile(String path) {
+
+    }
 }

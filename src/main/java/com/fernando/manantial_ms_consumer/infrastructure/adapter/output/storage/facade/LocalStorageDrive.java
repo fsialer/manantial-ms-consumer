@@ -17,13 +17,11 @@ public class LocalStorageDrive implements StorageDrive{
     public void uploadFile(String fileName, byte[] content, String path, String contentType) {
         try{
             // Crear el directorio si no existe
-            log.info("path: {}", path);
+            log.info("path upload: {}", path);
             File directory = new File(path);
             if (!directory.exists() && !directory.mkdirs()) {
                 throw new RuntimeException("No se pudo crear el directorio local: " + path);
             }
-
-
             // Ruta completa del archivo
             //File archivo = Paths.get("/pdfs", fileName).toFile();
             try(FileOutputStream  fos=new FileOutputStream(Paths.get(path,fileName).toFile())){
@@ -32,6 +30,24 @@ public class LocalStorageDrive implements StorageDrive{
         }
        catch(IOException e){
             throw new RuntimeException("Error uploading file to local storage",e);
+        }
+    }
+
+    @Override
+    public void deleteFile(String path) {
+        try {
+            File file = new File(path);
+            if (file.exists()) {
+                if (file.delete()) {
+                    log.info("File delete correctle: {}", path);
+                } else {
+                    throw new IOException("It can't delete file: " + path);
+                }
+            } else {
+                log.warn("File no exists: {}", path);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error deleting file from local storage", e);
         }
     }
 }

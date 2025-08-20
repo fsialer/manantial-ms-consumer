@@ -7,6 +7,7 @@ import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persiste
 public class TestUtilCustomer {
     public static Customer buildCustomerMock(){
         return Customer.builder()
+                .id("12345")
                 .name("John")
                 .lastName("Doe")
                 .age(33)

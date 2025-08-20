@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerRedisRepository  {
     Mono<Boolean> save(CustomerTemplate customerTemplate);
+    Mono<Boolean> delete(String key);
+    Mono<CustomerTemplate> getCustomer(String key);
 }

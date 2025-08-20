@@ -25,8 +25,18 @@ public class AwsS3StorageDrive implements StorageDrive{
         ObjectMetadata metadata=new ObjectMetadata();
         metadata.setContentLength(content.length);
         metadata.setContentType(contentType);
-
         amazonS3.putObject(bucket, path.concat("/").concat(fileName),inputStream,metadata);
         log.info("✅ file upload  successfully to aws s3");
+    }
+
+    @Override
+    public void deleteFile(String path) {
+        try {
+            amazonS3.deleteObject(bucket, path);
+            log.info("🗑️ File delete correctly in AWS S3: {}", path);
+        } catch (Exception e) {
+            log.error("❌ Error delete file in AWS S3: {}", path, e);
+            throw new RuntimeException("Error deleting file from AWS S3", e);
+        }
     }
 }

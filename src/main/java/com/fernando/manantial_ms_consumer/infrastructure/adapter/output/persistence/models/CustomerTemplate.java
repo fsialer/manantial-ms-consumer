@@ -1,5 +1,6 @@
 package com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persistence.models;
 
+import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import lombok.*;
 
 @Getter

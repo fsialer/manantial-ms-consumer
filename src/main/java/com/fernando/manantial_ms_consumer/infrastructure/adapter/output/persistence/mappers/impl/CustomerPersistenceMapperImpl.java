@@ -19,5 +19,16 @@ public class CustomerPersistenceMapperImpl implements CustomerPersistenceMapper 
                 .build();
     }
 
+    @Override
+    public Customer customerTemplateTocustomer(CustomerTemplate customerTemplate) {
+        return Customer.builder()
+                .id(customerTemplate.getId())
+                .name(customerTemplate.getName())
+                .lastName(customerTemplate.getLastName())
+                .age(customerTemplate.getAge())
+                .birthDate(customerTemplate.getBirthDate())
+                .build();
+    }
+
 
 }

@@ -18,4 +18,9 @@ public class StorageFileAdapter implements StoreFilePort {
     public void store(String fileName, byte[] content, String path, String contentType) {
         storageFactory.getStorageDrive(storageType).uploadFile(fileName,content, path, contentType);
     }
+
+    @Override
+    public void delete(String path) {
+        storageFactory.getStorageDrive(storageType).deleteFile(path);
+    }
 }

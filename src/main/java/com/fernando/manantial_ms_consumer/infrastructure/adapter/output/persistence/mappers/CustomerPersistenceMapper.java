@@ -5,4 +5,5 @@ import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persiste
 
 public interface CustomerPersistenceMapper {
     CustomerTemplate customerToCustomerTemplate(Customer customer);
+    Customer customerTemplateTocustomer(CustomerTemplate customer);
 }

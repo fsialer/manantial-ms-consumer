@@ -19,4 +19,15 @@ public class CustomerPersistenceAdapter implements CustomerPersistencePort {
     public Mono<Boolean> saveCustomer(Customer customer) {
         return customerRepository.save(customerPersistenceMapper.customerToCustomerTemplate(customer));
     }
+
+    @Override
+    public Mono<Customer> getCustomer(String key) {
+
+        return customerRepository.getCustomer(key).doOnNext(customerTemplate -> System.out.println("jabo: "+customerTemplate.getId())).map(customerPersistenceMapper::customerTemplateTocustomer).doOnNext(customer -> {System.out.println("dd: "+customer.getId());});
+    }
+
+    @Override
+    public Mono<Boolean> deleteCustomer(String key) {
+        return customerRepository.delete(key);
+    }
 }

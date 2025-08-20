@@ -6,11 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -60,5 +57,32 @@ class StorageFileAdapterTest {
         when(storageFactory.getStorageDrive(unsupportedStorageType)).thenThrow(new IllegalArgumentException("Unsupported storage type: ".concat(unsupportedStorageType)));
         assertThrows(IllegalArgumentException.class,()->storageFileAdapter.store("file.pdf","content".getBytes(),path,contentType));
         verify(mockDrive,times(0)).uploadFile(anyString(), any(),anyString(),anyString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "local, /pdfs",
+            "s3, ignored",
+            "blob, ignored"
+    })
+    @DisplayName("When Delete Customer Expect Delete File Customer")
+    void When_DeleteCustomer_Expect_DeleteFileCustomer(String storageType, String path) {
+        String fileName = storageType+"test.pdf";
+        when(storageFactory.getStorageDrive(storageType)).thenReturn(mockDrive);
+        ReflectionTestUtils.setField(storageFileAdapter, "storageType", storageType);
+        doNothing().when(mockDrive).deleteFile(anyString());
+        storageFileAdapter.delete(path.concat("/").concat(fileName));
+        verify(mockDrive,times(1)).deleteFile(anyString());
+    }
+
+    @Test
+    @DisplayName("Expect IllegalArgumentException for storage type unsupported When delete a file")
+    void Expect_IllegalArgumentExceptionForStorageTypeUnsupported_When_DeleteAFile() {
+        String unsupportedStorageType = "unsupported";
+        String path = "/pdfs/file.pdf";
+        ReflectionTestUtils.setField(storageFileAdapter, "storageType", unsupportedStorageType);
+        when(storageFactory.getStorageDrive(unsupportedStorageType)).thenThrow(new IllegalArgumentException("Unsupported storage type: ".concat(unsupportedStorageType)));
+        assertThrows(IllegalArgumentException.class,()->storageFileAdapter.delete(path));
+        verify(mockDrive,times(0)).deleteFile(anyString());
     }
 }
