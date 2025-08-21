@@ -12,6 +12,8 @@ public class CustomerFilePersistenceMapperImpl implements CustomerFilePersistenc
         return CustomerFileTemplate.builder()
                 .id(customerFile.getId())
                 .path(customerFile.getPath())
+                .fileName(customerFile.getFileName())
+                .contentType(customerFile.getContentType())
                 .build();
     }
 
@@ -20,6 +22,8 @@ public class CustomerFilePersistenceMapperImpl implements CustomerFilePersistenc
         return CustomerFile.builder()
                 .id(customerFile.getId())
                 .path(customerFile.getPath())
+                .fileName(customerFile.getFileName())
+                .contentType(customerFile.getContentType())
                 .build();
     }
 }

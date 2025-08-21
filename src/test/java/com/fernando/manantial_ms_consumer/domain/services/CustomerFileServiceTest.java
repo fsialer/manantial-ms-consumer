@@ -1,8 +1,10 @@
 package com.fernando.manantial_ms_consumer.domain.services;
 
+import com.fernando.manantial_ms_consumer.application.ports.input.GetCustomerFileUseCase;
 import com.fernando.manantial_ms_consumer.application.ports.output.CustomerFilePersistencePort;
 import com.fernando.manantial_ms_consumer.application.ports.output.StoreFilePort;
 import com.fernando.manantial_ms_consumer.domain.exceptions.CustomerFileNotFoundException;
+import com.fernando.manantial_ms_consumer.domain.exceptions.CustomerNotFoundException;
 import com.fernando.manantial_ms_consumer.domain.models.CustomerFile;
 import com.fernando.manantial_ms_consumer.utils.TestUtilCustomerFile;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -81,5 +84,44 @@ class CustomerFileServiceTest {
         Mockito.verify(customerFilePersistencePort,times(1)).getCustomerFile(anyString());
         Mockito.verify(customerFilePersistencePort,times(1)).deleteCustomerFile(anyString());
         Mockito.verify(storeFilePort,times(0)).delete(anyString());
+    }
+
+    @Test
+    @DisplayName("When Path File Is Correct Expect An Array Bytes")
+    void When_PathFileIsCorrect_Expect_AnArrayBytes() {
+        // Arrange
+        String path = "some/path/file.pdf";
+        byte[] expectedBytes = "Hello S3".getBytes();
+        when(storeFilePort.getFile(anyString())).thenReturn(expectedBytes);
+        byte[] file=customerFileService.getFile(path);
+
+        assertArrayEquals(expectedBytes, file);
+        Mockito.verify(storeFilePort, times(1)).getFile(path);
+    }
+
+    @Test
+    @DisplayName("When CustomerFile Id Exist Expect Information CustomerFile")
+    void When_CustomerFileIdExist_Expect_InformationCustomerFile(){
+        CustomerFile customerFile=TestUtilCustomerFile.buildCustomerFileMock();
+        when(customerFilePersistencePort.getCustomerFile(anyString())).thenReturn(Mono.just(customerFile));
+        Mono<CustomerFile> customerFileMono=customerFileService.getCustomerFile("sdsd545d1sd1sJohn");
+        StepVerifier.create(customerFileMono)
+                .expectNextMatches(customerMatch->{
+                    return customerMatch.getId().equals(customerFile.getId())
+                            && customerMatch.getPath().equals(customerFile.getPath())
+                            && customerMatch.getFileName().equals(customerFile.getFileName())
+                            && customerMatch.getContentType().equals(customerFile.getContentType());
+                });
+        Mockito.verify(customerFilePersistencePort,times(1)).getCustomerFile(anyString());
+    }
+
+    @Test
+    @DisplayName("Expect Information CustomerFile Do Not Found When CustomerFileID Do Not Exists")
+    void Expect_InformationCustomerFileDoNotFound_When_CustomerFileIDDoNotExists(){
+        when(customerFilePersistencePort.getCustomerFile(anyString())).thenReturn(Mono.empty());
+        Mono<CustomerFile> customerFileMono=customerFileService.getCustomerFile("sdsd545d1sd1sJohn");
+        StepVerifier.create(customerFileMono)
+                .expectError(CustomerNotFoundException.class);
+        Mockito.verify(customerFilePersistencePort,times(1)).getCustomerFile(anyString());
     }
 }

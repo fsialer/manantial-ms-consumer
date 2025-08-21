@@ -39,4 +39,16 @@ public class AwsS3StorageDrive implements StorageDrive{
             throw new RuntimeException("Error deleting file from AWS S3", e);
         }
     }
+
+    @Override
+    public byte[] getFile(String path) {
+        try {
+            var s3Object = amazonS3.getObject(bucket, path);
+            var inputStream = s3Object.getObjectContent();
+            return inputStream.readAllBytes();
+        } catch (Exception e) {
+            log.error("❌ Error downloading file from AWS S3: {}", path, e);
+            throw new RuntimeException("Error downloading file from AWS S3", e);
+        }
+    }
 }

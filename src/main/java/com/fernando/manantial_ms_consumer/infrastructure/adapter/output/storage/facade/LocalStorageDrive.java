@@ -50,4 +50,17 @@ public class LocalStorageDrive implements StorageDrive{
             throw new RuntimeException("Error deleting file from local storage", e);
         }
     }
+
+    @Override
+    public byte[] getFile(String path) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                throw new RuntimeException("File don't exists: " + path);
+            }
+            return java.nio.file.Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading file from local storage", e);
+        }
+    }
 }

@@ -13,4 +13,9 @@ public class AzureBlobStoreStorageDrive implements StorageDrive{
     public void deleteFile(String path) {
 
     }
+
+    @Override
+    public byte[] getFile(String path) {
+        return new byte[0];
+    }
 }

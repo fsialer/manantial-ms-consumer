@@ -23,4 +23,9 @@ public class StorageFileAdapter implements StoreFilePort {
     public void delete(String path) {
         storageFactory.getStorageDrive(storageType).deleteFile(path);
     }
+
+    @Override
+    public byte[] getFile(String path) {
+        return storageFactory.getStorageDrive(storageType).getFile(path);
+    }
 }

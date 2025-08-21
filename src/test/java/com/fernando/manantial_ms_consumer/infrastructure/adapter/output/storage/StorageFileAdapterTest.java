@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -84,5 +85,22 @@ class StorageFileAdapterTest {
         when(storageFactory.getStorageDrive(unsupportedStorageType)).thenThrow(new IllegalArgumentException("Unsupported storage type: ".concat(unsupportedStorageType)));
         assertThrows(IllegalArgumentException.class,()->storageFileAdapter.delete(path));
         verify(mockDrive,times(0)).deleteFile(anyString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "local, pdfs/file.pdf",
+            "s3, ignored",
+            "blob, ignored"
+    })
+    @DisplayName("When PathFile Is Correct Expect Found File ByteArrays")
+    void When_PathFileIsCorrect_Expect_FoundFileByteArrays(String storageType, String path) {
+        byte[] expectedBytes = "Hello S3".getBytes();
+        ReflectionTestUtils.setField(storageFileAdapter, "storageType", storageType);
+        when(storageFactory.getStorageDrive(storageType)).thenReturn(mockDrive);
+        when(mockDrive.getFile(path)).thenReturn(expectedBytes);
+        byte[] files= storageFileAdapter.getFile(path);
+        assertEquals(expectedBytes,files);
+        verify(mockDrive,times(1)).getFile(anyString());
     }
 }
