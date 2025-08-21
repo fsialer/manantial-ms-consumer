@@ -10,4 +10,6 @@ import lombok.*;
 public class CustomerFileTemplate {
     private String id;
     private String path;
+    private String fileName;
+    private String contentType;
 }
