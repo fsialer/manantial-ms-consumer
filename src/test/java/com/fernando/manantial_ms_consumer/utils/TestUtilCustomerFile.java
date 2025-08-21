@@ -8,6 +8,8 @@ public class TestUtilCustomerFile {
         return CustomerFile.builder()
                 .id("sdsd545d1sd1sJohn")
                 .path("/sd/example.pdf")
+                .fileName("file")
+                .contentType("application/pdf")
                 .build();
     }
 
@@ -15,6 +17,8 @@ public class TestUtilCustomerFile {
         return CustomerFileTemplate.builder()
                 .id("sdsd545d1sd1sJohn")
                 .path("/sd/example.pdf")
+                .fileName("file")
+                .contentType("application/pdf")
                 .build();
     }
 

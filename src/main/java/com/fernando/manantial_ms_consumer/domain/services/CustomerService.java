@@ -41,11 +41,12 @@ public class CustomerService implements SaveCustomerUseCase, GeneratePdfCustomer
         byte[] pdf= generateFilePdfPort.generatePdfCustomer(customer);
         String fileName="customer_"+customer.getId()+".pdf";
         String pathFull=customerInformationPath.concat("/").concat(fileName);
-        customerFilePersistencePort.saveCustomerFile(new CustomerFile(customer.getId(),pathFull))
+        String contentType= "application/pdf";
+        customerFilePersistencePort.saveCustomerFile(new CustomerFile(customer.getId(),pathFull,fileName,contentType))
                 .flatMap(saved->{
                     if(Boolean.TRUE.equals(saved)){
                         return Mono.fromRunnable(() -> {
-                            storeFilePort.store(fileName,pdf, customerInformationPath,"application/pdf");
+                            storeFilePort.store(fileName,pdf, customerInformationPath,contentType);
                             log.info("PDF generated and stored for customer: {} ({})",customer.getId(),fileName);
                         } );
                     }else{
