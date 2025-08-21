@@ -26,7 +26,7 @@ public class CustomerRedisRepositoryImpl implements CustomerRedisRepository {
     @Override
     public Mono<CustomerTemplate> getCustomer(String key) {
         log.info("key: {}",key);
-        return reactiveRedisTemplate.get("customer"+key)
+        return reactiveRedisTemplate.get("customers"+key)
                 .doOnNext(c -> log.info("📦 Cliente obtenido desde Redis con key {}: {} {}", key, c, c.getId()))
                 .switchIfEmpty(Mono.defer(() -> {
                     log.warn("⚠️ Cliente no encontrado en Redis con key: {}", key);
