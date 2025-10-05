@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 	implementation("com.github.librepdf:openpdf:2.2.4")
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -65,7 +65,10 @@ tasks.jacocoTestReport {
 				'**/AzureBlobStoreStorageDrive.*',
 				'**/AwsS3StorageDrive.*',
 				"**/LocalStorageDrive.*",
-				'**/config/*'
+				'**/config/*',
+				'**/enums/*',
+				'**/exceptions/*',
+				'**/utils/*'
 		]) }))
 	}
 }

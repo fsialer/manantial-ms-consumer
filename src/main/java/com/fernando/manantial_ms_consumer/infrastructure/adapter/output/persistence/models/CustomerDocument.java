@@ -3,6 +3,9 @@ package com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persist
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 //import org.springframework.data.mongodb.core.mapping.Document;
 
 
@@ -11,7 +14,7 @@ import org.springframework.data.annotation.Id;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//@Document(collection = "customers")
+@Document(collection = "customers")
 public class CustomerDocument {
     @Id
     private String id;
@@ -19,5 +22,6 @@ public class CustomerDocument {
     private String lastName;
     private Integer age;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private String birthDate;
+    private LocalDate birthDate;
+    private String pathFile;
 }

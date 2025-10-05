@@ -7,10 +7,10 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_HOST:localhost:9092}
   data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:password}
+    mongodb:
+      uri: ${DB_HOST:mongodb://localhost:27017/customer_db?authSource=admin}
+      username: ${DB_USERNAME:root}
+      password: ${DB_PASSWORD:1234}
 file_path:
   customer:
     information: ${PATH_CUSTOMERS:customers/pdf}
@@ -37,6 +37,6 @@ management:
       export:
         prometheus:
           enabled: true
-logging:
-  file:
-    name: ./logs/app.log
+#logging:
+#  file:
+#    name: ./logs/app.log

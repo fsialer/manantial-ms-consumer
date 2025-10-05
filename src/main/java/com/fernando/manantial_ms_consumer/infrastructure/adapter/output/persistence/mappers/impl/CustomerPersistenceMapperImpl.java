@@ -2,32 +2,37 @@ package com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persist
 
 import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persistence.mappers.CustomerPersistenceMapper;
-import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persistence.models.CustomerTemplate;
+import com.fernando.manantial_ms_consumer.infrastructure.adapter.output.persistence.models.CustomerDocument;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class CustomerPersistenceMapperImpl implements CustomerPersistenceMapper {
 
     @Override
-    public CustomerTemplate customerToCustomerTemplate(Customer customer) {
-        return CustomerTemplate.builder()
+    public CustomerDocument customerToCustomerDocument(Customer customer) {
+        return CustomerDocument.builder()
                 .id(customer.getId())
                 .name(customer.getName())
                 .lastName(customer.getLastName())
                 .age(customer.getAge())
                 .birthDate(customer.getBirthDate())
+                .pathFile(customer.getPathFile())
                 .build();
     }
 
     @Override
-    public Customer customerTemplateTocustomer(CustomerTemplate customerTemplate) {
-        return Customer.builder()
-                .id(customerTemplate.getId())
-                .name(customerTemplate.getName())
-                .lastName(customerTemplate.getLastName())
-                .age(customerTemplate.getAge())
-                .birthDate(customerTemplate.getBirthDate())
-                .build();
+    public Mono<Customer> customerDocumentMonoToCustomerMono(Mono<CustomerDocument> customerMono) {
+        return customerMono.flatMap(customer->{
+            return Mono.just(Customer.builder()
+                    .id(customer.getId())
+                    .name(customer.getName())
+                    .lastName(customer.getLastName())
+                    .age(customer.getAge())
+                    .birthDate(customer.getBirthDate())
+                    .pathFile(customer.getPathFile())
+                    .build());
+        });
     }
 
 

@@ -4,7 +4,6 @@ import com.fernando.manantial_ms_consumer.domain.models.Customer;
 import reactor.core.publisher.Mono;
 
 public interface CustomerPersistencePort {
-    Mono<Boolean> saveCustomer(Customer customer);
-    Mono<Customer> getCustomer(String key);
-    Mono<Boolean> deleteCustomer(String key);
+    Mono<Customer> saveCustomer(Customer customer);
+    Mono<Customer> getCustomer(String id);
 }
